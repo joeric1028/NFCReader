@@ -25,13 +25,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    multithread.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    multithread.h
 
 FORMS += \
         mainwindow.ui
+
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../Qt/Tools/mingw530_32/i686-w64-mingw32/lib/ -lwinscar
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../Qt/Tools/mingw530_32/i686-w64-mingw32/lib/ -lwinscard
