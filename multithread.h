@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QThread>
+#include <QRunnable>
 #include <QWaitCondition>
 #include <winscard.h>
 
@@ -12,7 +13,9 @@ class multithread : public QObject
     Q_OBJECT
 public:
     explicit multithread(QObject *parent = 0);
-    void start(QString name);
+    ~multithread();
+    void start();
+    void CardListReadersLoop();
     QString cardUID = NULL;
     bool mStop;
 private:
@@ -23,14 +26,15 @@ private:
     LPTSTR          pCard = NULL;
     LPTSTR          pReader = NULL;
 
-
 signals:
-
-    void on_number(QString cardName);
+    void onNumber(QString cardName);
     void CardStatusName(QString status);
+    void cardReaderName(QString name);
 
 public slots:
     void stop();
+    void pause();
+    void CardReadData(DWORD dwSend, DWORD dwRecv);
     void CardEstablishContext();
     void CardListReaders();
     void CardConnect(QString s);

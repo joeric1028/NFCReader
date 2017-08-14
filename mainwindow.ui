@@ -31,6 +31,10 @@
   <property name="windowTitle">
    <string>NFC Reader V1</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>res/img/Polling.ico</normaloff>res/img/Polling.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QGroupBox" name="groupBox_registerACard">
     <property name="geometry">
@@ -54,6 +58,9 @@
      </item>
      <item row="1" column="0">
       <widget class="QPushButton" name="pushButton_readData">
+       <property name="statusTip">
+        <string>Read Data</string>
+       </property>
        <property name="text">
         <string>Read Data</string>
        </property>
@@ -61,6 +68,9 @@
      </item>
      <item row="2" column="0">
       <widget class="QPushButton" name="pushButton_writeData">
+       <property name="statusTip">
+        <string>Write Data</string>
+       </property>
        <property name="text">
         <string>Write Data</string>
        </property>
@@ -68,6 +78,9 @@
      </item>
      <item row="2" column="1">
       <widget class="QSpinBox" name="spinBox">
+       <property name="statusTip">
+        <string>Block No.</string>
+       </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::PlusMinus</enum>
        </property>
@@ -75,32 +88,25 @@
      </item>
      <item row="2" column="2">
       <widget class="QLineEdit" name="lineEdit_valueData">
+       <property name="statusTip">
+        <string>value/data</string>
+       </property>
        <property name="placeholderText">
         <string>value/data</string>
        </property>
       </widget>
      </item>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="pushButton_polling">
+       <property name="statusTip">
+        <string>Polling</string>
+       </property>
+       <property name="text">
+        <string>Stop Polling</string>
+       </property>
+      </widget>
+     </item>
     </layout>
-   </widget>
-   <widget class="QComboBox" name="comboBox_device">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>161</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <item>
-     <property name="text">
-      <string>Select Component</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>ACR122U-A9</string>
-     </property>
-    </item>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>

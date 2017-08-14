@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/" lang="English">
+        <file>res/img/Polling.ico</file>
+    </qresource>
+</RCC>

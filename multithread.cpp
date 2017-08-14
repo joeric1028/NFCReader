@@ -5,37 +5,104 @@ multithread::multithread(QObject *parent) : QObject(parent)
 {
     mStop = false;
 }
+multithread::~multithread()
+{
+    mStop = true;
+}
 
-void multithread::start(QString name)
+void multithread::start()
 {
     cardUID = "";
     mStop = false;
-    int time = 3600;
+    CardEstablishContext();
+    CardListReaders();
     for(;;)
     {
-        if(cardUID==NULL)
+        if(mStop != true)
         {
-            CardEstablishContext();
-            CardListReaders();
-            CardConnect(nfccard);
-            CardTransmit();
-            CardStatus();
-            CardReleaseContext();
-            emit on_number(NULL);
+            if(cardUID==NULL)
+            {
+                CardConnect(nfccard);
+                CardTransmit();
+                CardStatus();
+                emit onNumber(cardUID);
+            }
+            else
+            {
+                qDebug()<<"Card Found "<<cardUID;
+                emit onNumber(cardUID);
+                CardStatus();
+            }
         }
         else
         {
-            qDebug()<<"Card Found "<<cardUID;
-            name = cardUID;
-            emit on_number(name);
-            CardStatus();
-            time--;
-            if(time == 0)
-            {
-                cardUID = "";
-                time = 3600;
-            }
+            return;
         }
+    }
+}
+
+void multithread::CardListReadersLoop()
+{
+    LPTSTR          pmszReaders = NULL;
+    LONG            lReturn, lReturn2;
+    DWORD           cch = SCARD_AUTOALLOCATE;
+
+    mStop = false;
+    cardUID = "";
+
+    CardEstablishContext();
+    // Retrieve the list the readers.
+    // hSC was set by a previous call to SCardEstablishContext.
+    lReturn = SCardListReaders(hSC,
+                               NULL,
+                               (LPTSTR)&pmszReaders,
+                               &cch );
+    switch( lReturn )
+    {
+        case SCARD_E_NO_READERS_AVAILABLE:
+           // qDebug("Reader is not in groups.\n");
+        qDebug()<<"Reader is not in groups.\n";
+            // Take appropriate action.
+            // ...
+            break;
+
+        case SCARD_S_SUCCESS:
+            // Do something with the multi string of readers.
+            // Output the values.
+            // A double-null terminates the list of values.
+            pReader = pmszReaders;
+            while ( '\0' != *pReader )
+            {
+                // Display the value.
+                //qDebug("Reader: %S\n", pReader );
+
+                QString convert = QString::fromWCharArray(pReader);
+
+                //qDebug()<<convert;
+               qDebug()<<"Reader: %S"<<convert;
+               emit cardReaderName(convert);
+               nfccard = convert;
+
+                // Advance to the next value.
+               pReader = pReader + wcslen((wchar_t *)pReader) + 1;
+//                QString convert = QString::fromchararray(pReader);
+//                qDebug()<<convert;
+
+            }
+            // Free the memory.
+            lReturn2 = SCardFreeMemory( hSC,
+                                       pmszReaders );
+            if ( SCARD_S_SUCCESS != lReturn2 )
+               // qDebug("Failed SCardFreeMemory\n");
+                qDebug()<<"Failed SCardFreeMemory\n";
+            break;
+
+    default:
+            //qDebug("Failed SCardListReaders\n");
+        qDebug()<<"Failed SCardListReaders\n";
+            // Take appropriate action.
+            // ...
+            break;
     }
 }
 
@@ -43,9 +110,40 @@ void multithread::stop()
 {
     cardUID = "";
     mStop = true;
+    CardReleaseContext();
     CardFreeMemory();
-    CardDisconnect();
-//    CardReleaseContext();
+}
+
+void multithread::pause()
+{
+    mStop = true;
+}
+
+void multithread::CardReadData(DWORD dwSend,DWORD dwRecv)
+{
+    BYTE pbRecv[258];
+    BYTE  pbSend[] = {0xFF,0x00,0x51,0xE1,0x00};
+    dwSend = sizeof(pbSend);
+    dwRecv = sizeof(pbRecv);
+    LONG lReturn;
+    lReturn = SCardTransmit(hCardHandle,
+                             SCARD_PCI_T1,
+                             pbSend,
+                             dwSend,
+                             NULL,
+                             pbRecv,
+                             &dwRecv );
+    if ( SCARD_S_SUCCESS != lReturn )
+    {
+        qDebug()<<"Failed SCardTransmit\n";
+    }
+    else if(SCARD_S_SUCCESS == lReturn)
+    {
+        qDebug()<<"Success";
+        QByteArray qdb = (const char*)(pbRecv);
+        qdb.chop(1);
+        cardUID = QString(qdb.toHex());
+     }
 }
 
 void multithread::CardEstablishContext()
@@ -135,8 +233,6 @@ void multithread:: CardConnect(QString s)
     LONG            lReturn;
     DWORD           dwAP;
 
-
-
     lReturn = SCardConnect( hSC,
                             (LPCTSTR)s.unicode(),
                             SCARD_SHARE_SHARED,
@@ -151,7 +247,6 @@ void multithread:: CardConnect(QString s)
 
        // exit(1);  // Or other appropriate action.
     }
-
 
     // Use the connection.
     // Display the active protocol.
@@ -299,7 +394,6 @@ void multithread::CardStatus()
     DWORD           dwState, dwProtocol;
     LONG            lReturn;
 
-
     // Determine the status.
     // hCardHandle was set by an earlier call to SCardConnect.
     lReturn = SCardStatus(hCardHandle,
@@ -314,53 +408,46 @@ void multithread::CardStatus()
     {
 //        printf("Failed SCardStatus\n");
         qDebug()<<"Failed SCardStatus\n";
-     //   exit(1);     // or other appropriate action
+//        exit(1);     // or other appropriate action
     }
 
-    // Examine retrieved status elements.
-    // Look at the reader name and card state.
-    //printf("%S\n", szReader );
-
+//    Examine retrieved status elements.
+//    Look at the reader name and card state.
+//    printf("%S\n", szReader );
 
     qDebug()<<"%S\n"<<szReader;
 
     switch ( dwState )
     {
         case SCARD_ABSENT:
-//            printf("Card absent.\n");
         qDebug()<<"Card absent.\n";
             cardUID = "";
             emit CardStatusName("Card absent.\n");
             break;
         case SCARD_PRESENT:
-//            printf("Card present.\n");
        qDebug()<<"Card present.\n";
        emit CardStatusName("Card present.\n");
             break;
         case SCARD_SWALLOWED:
-//            printf("Card swallowed.\n");
         qDebug()<<"Card swallowed.\n";
         emit CardStatusName("Card swallowed.\n");
             break;
         case SCARD_POWERED:
-//            printf("Card has power.\n");
         qDebug()<<"Card has power.\n";
         emit CardStatusName("Card has power.\n");
             break;
         case SCARD_NEGOTIABLE:
-//            printf("Card reset and waiting PTS negotiation.\n");
         qDebug()<<"Card reset and waiting PTS negotiation.\n";
         emit CardStatusName("Card reset and waiting PTS negotiation.\n");
             break;
         case SCARD_SPECIFIC:
-//            printf("Card has specific communication protocols set.\n");
         qDebug()<<"Card has specific communication protocols set.\n";
             emit CardStatusName("Card has specific communication protocols set.\n");
             break;
         default:
-//            printf("Unknown or unexpected card state.\n");
-        qDebug()<<"Unknown or unexpected card state.\n";
+            qDebug()<<"Unknown or unexpected card state.\n";
             emit CardStatusName("Unknown or unexpected card state.");
+            cardUID = "";
             break;
     }
 }
@@ -400,7 +487,7 @@ void multithread::CardTransmit()
 void multithread::CardDisconnect()
 {
     LONG lReturn = SCardDisconnect(hCardHandle,
-                              SCARD_EJECT_CARD);
+                              SCARD_UNPOWER_CARD);
     if ( SCARD_S_SUCCESS != lReturn )
     {
         qDebug("Failed SCardDisconnect");
