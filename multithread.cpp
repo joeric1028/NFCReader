@@ -146,6 +146,33 @@ void multithread::CardReadData(DWORD dwSend,DWORD dwRecv)
      }
 }
 
+void multithread::CardWriteData(DWORD dwSend,DWORD dwRecv)
+{
+    BYTE pbRecv[258];
+    BYTE  pbSend[] = {0xFF,0x00,0x51,0xE1,0x00};
+    dwSend = sizeof(pbSend);
+    dwRecv = sizeof(pbRecv);
+    LONG lReturn;
+    lReturn = SCardTransmit(hCardHandle,
+                             SCARD_PCI_T1,
+                             pbSend,
+                             dwSend,
+                             NULL,
+                             pbRecv,
+                             &dwRecv );
+    if ( SCARD_S_SUCCESS != lReturn )
+    {
+        qDebug()<<"Failed SCardTransmit\n";
+    }
+    else if(SCARD_S_SUCCESS == lReturn)
+    {
+        qDebug()<<"Success";
+        QByteArray qdb = (const char*)(pbRecv);
+        qdb.chop(1);
+        cardUID = QString(qdb.toHex());
+     }
+}
+
 void multithread::CardEstablishContext()
 {
         LONG            lReturn;
@@ -459,7 +486,6 @@ void multithread::CardTransmit()
    DWORD dwSend,dwRecv;
    dwSend = sizeof(pbSend);
    dwRecv = sizeof(pbRecv);
-
 
     LONG lReturn;
     lReturn = SCardTransmit(hCardHandle,

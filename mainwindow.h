@@ -22,8 +22,13 @@ signals:
 public slots:
     void newNumber(QString cardUid);
     void cardStatus(QString status);
+    void enablebutton(int i);
 private slots:
     void on_pushButton_polling_clicked();
+
+    void on_pushButton_readData_clicked();
+
+    void on_pushButton_writeData_clicked();
 
 private:
     Ui::MainWindow *ui;

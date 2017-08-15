@@ -35,6 +35,7 @@ public slots:
     void stop();
     void pause();
     void CardReadData(DWORD dwSend, DWORD dwRecv);
+    void CardWriteData(DWORD dwSend,DWORD dwRecv);
     void CardEstablishContext();
     void CardListReaders();
     void CardConnect(QString s);

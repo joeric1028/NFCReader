@@ -32,8 +32,8 @@
    <string>NFC Reader V1</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>res/img/Polling.ico</normaloff>res/img/Polling.ico</iconset>
+   <iconset resource="res.qrc">
+    <normaloff>:/res/img/Polling.ico</normaloff>:/res/img/Polling.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QGroupBox" name="groupBox_registerACard">
@@ -49,13 +49,6 @@
      <string>Register a card</string>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="1" colspan="2">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="0">
       <widget class="QPushButton" name="pushButton_readData">
        <property name="statusTip">
@@ -63,6 +56,15 @@
        </property>
        <property name="text">
         <string>Read Data</string>
+       </property>
+       <property name="autoDefault">
+        <bool>true</bool>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -74,15 +76,21 @@
        <property name="text">
         <string>Write Data</string>
        </property>
+       <property name="autoDefault">
+        <bool>true</bool>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QSpinBox" name="spinBox">
-       <property name="statusTip">
-        <string>Block No.</string>
-       </property>
-       <property name="buttonSymbols">
-        <enum>QAbstractSpinBox::PlusMinus</enum>
+     <item row="0" column="1" colspan="2">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -104,6 +112,25 @@
        <property name="text">
         <string>Stop Polling</string>
        </property>
+       <property name="autoDefault">
+        <bool>true</bool>
+       </property>
+       <property name="default">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QSpinBox" name="spinBox">
+       <property name="statusTip">
+        <string>Block No.</string>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::PlusMinus</enum>
+       </property>
+       <property name="maximum">
+        <number>15</number>
+       </property>
       </widget>
      </item>
     </layout>
@@ -112,6 +139,8 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>
