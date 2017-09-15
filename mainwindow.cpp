@@ -28,11 +28,9 @@ void MainWindow::newNumber(QString cardUid)
             if(cardUID != NULL)ui->label->setText("Card Detection: Card Found "+cardUID);
             else ui->label->setText("Card Detection: No Card Within Range");
         }else{
-            ui->label->setText("Card Detection: No Card Reader Found!");
-
+            ui->label->setText("Card Detection: No Card Reader Found");
         }
-    }
-    else ui->label->setText("Card Detection: Stop Detecting");
+    }else ui->label->setText("Card Detection: Stop Polling");
 }
 
 void MainWindow::cardStatus(QString status)
@@ -82,21 +80,25 @@ void MainWindow::on_pushButton_polling_clicked()
 void MainWindow::on_pushButton_readData_clicked()
 {
     QString data;
-
     if(ui->pushButton_polling->text() == "Start Polling")
     {
-
         mJob->CardReadData(ui->spinBox->value());
         data = mJob->readData;
         ui->lineEdit_valueData->setText(data);
         if(mJob->returnStatus == true)
         {
-            ui->label->setText("Read Data Success : " + mJob->readData);
+            if(!data.isEmpty())
+            {
+                ui->label->setText("Read Data Success : " + data);
+            }else{
+                ui->label->setText("Read Data Success : No Data on Block " + ui->spinBox->text() + '.');
+            }
         }else{
             ui->label->setText("Read Data Failed");
         }
     }
 }
+
 
 void MainWindow::on_pushButton_writeData_clicked()
 {

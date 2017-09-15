@@ -16,31 +16,32 @@ void multithread::start()
 {
     cardUID = "";
     mStop = false;
+    returnCardReaderStatus = false;
     CardEstablishContext();
     for(;;)
     {
-        CardListReaders();
-        if(returnCardReaderStatus == true)
-        {
-            CardReleaseContext();
-            CardEstablishContext();
-        }
-
         if(mStop != true)
         {
-            if(cardUID==NULL)
+            CardListReaders();
+            if(returnCardReaderStatus == false)
             {
-                CardListReaders();
-                CardConnect(nfccard);
-                CardTransmit();
-                CardStatus();
-                emit onNumber(cardUID);
-            }
-            else
-            {
-                qDebug()<<"Card Found "<<cardUID;
-                emit onNumber(cardUID);
-                CardStatus();
+                CardEstablishContext();
+                emit onNumber("");
+            }else{
+                if(cardUID==NULL)
+                {
+                    CardListReaders();
+                    CardConnect(nfccard);
+                    CardTransmit();
+                    CardStatus();
+                    emit onNumber(cardUID);
+                }
+                else
+                {
+                    qDebug()<<"Card Found "<<cardUID;
+                    emit onNumber(cardUID);
+                    CardStatus();
+                }
             }
         }
         else
@@ -128,6 +129,7 @@ void multithread::pause()
 
 void multithread::CardReadData(int blockNo)
 {
+    CardConnect(nfccard);
     CardAuthenticate(blockNo);
     BYTE pbRecv[258];
     BYTE  pbSend[] = {0xFF,0xB0,0x00,0x00,0x10};
@@ -159,21 +161,20 @@ void multithread::CardReadData(int blockNo)
 
 void multithread::CardWriteData(QString inputData, int blockNo)
 {
+    CardConnect(nfccard);
     CardAuthenticate(blockNo);
     BYTE pbRecv[258];
-    BYTE  pbSend[] = {0xFF,0xD6,0x00,0x04,0x10};
-    pbSend[3] = blockNo;
-    QByteArray input;
-
-    unsigned int j = 1;
+    BYTE  pbSend[] = {0xFF,0xD6,0x00,0x04,0x10,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+    pbSend[3] = blockNo;;
+    unsigned int j = 0;
     for(int i = 1; i <= 16; i++)
     {
 
-        if(i > inputData.size() || inputData.isEmpty())
+        if(i > inputData.trimmed().size() || inputData.trimmed().isEmpty())
         {
-            pbSend[i+4] = NULL;
+            pbSend[i+4] = 0x00;
         }else{
-            pbSend[i+4] = inputData.trimmed().at(j).unicode();
+            pbSend[i+4] = inputData.trimmed().at(j).toLatin1();
         }
         j++;
     }
@@ -281,6 +282,7 @@ void multithread::CardListReaders()
         qDebug()<<"Failed SCardListReaders\n";
             // Take appropriate action.
             // ...
+        returnCardReaderStatus = false;
             break;
     }
 }
@@ -392,7 +394,7 @@ void multithread::CardListCards()
     {
         // Display the value.
 //       qDebug("%S\n", pCard );
-        qDebug()<<"%S"<<pCard;
+        qDebug()<<"%S"<<pCard << " value";
         // Advance to the next value.
         pCard = pCard + wcslen(pCard) + 1;
     }
