@@ -17,7 +17,10 @@ public:
     void start();
     void CardListReadersLoop();
     QString cardUID = NULL;
+    QString readData = NULL;
     bool mStop;
+    bool returnStatus;
+    bool returnCardReaderStatus;
 private:
     QString         nfccard = NULL;
     SCARDCONTEXT    hSC;
@@ -31,11 +34,12 @@ signals:
     void CardStatusName(QString status);
     void cardReaderName(QString name);
 
+
 public slots:
     void stop();
     void pause();
-    void CardReadData(DWORD dwSend, DWORD dwRecv);
-    void CardWriteData(DWORD dwSend,DWORD dwRecv);
+    void CardReadData(int blockNo);
+    void CardWriteData(QString inputData, int blockNo);
     void CardEstablishContext();
     void CardListReaders();
     void CardConnect(QString s);
@@ -47,6 +51,7 @@ public slots:
     void CardTransmit();
     void CardDisconnect();
     void CardFreeMemory();
+    void CardAuthenticate(int blockNo);
 };
 
 #endif // MULTITHREAD_H

@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     mJob->stop();
+    mJob->CardReleaseContext();
+    mJob->CardFreeMemory();
     delete ui;
 }
 
@@ -21,8 +23,14 @@ void MainWindow::newNumber(QString cardUid)
     cardUID = cardUid;
     if(ui->pushButton_polling->text() != "Start Polling")
     {
-        if(cardUID != NULL)ui->label->setText("Card Detection: Card Found "+cardUID);
-        else ui->label->setText("Card Detection: no card within range");
+        if(mJob->returnCardReaderStatus == true)
+        {
+            if(cardUID != NULL)ui->label->setText("Card Detection: Card Found "+cardUID);
+            else ui->label->setText("Card Detection: No Card Within Range");
+        }else{
+            ui->label->setText("Card Detection: No Card Reader Found!");
+
+        }
     }
     else ui->label->setText("Card Detection: Stop Detecting");
 }
@@ -74,11 +82,19 @@ void MainWindow::on_pushButton_polling_clicked()
 void MainWindow::on_pushButton_readData_clicked()
 {
     QString data;
+
     if(ui->pushButton_polling->text() == "Start Polling")
     {
-//        mJob->CardReadData();
-//        data = ;
+
+        mJob->CardReadData(ui->spinBox->value());
+        data = mJob->readData;
         ui->lineEdit_valueData->setText(data);
+        if(mJob->returnStatus == true)
+        {
+            ui->label->setText("Read Data Success : " + mJob->readData);
+        }else{
+            ui->label->setText("Read Data Failed");
+        }
     }
 }
 
@@ -87,7 +103,14 @@ void MainWindow::on_pushButton_writeData_clicked()
     if(ui->pushButton_polling->text() == "Start Polling")
     {
 
-        //mJob->CardWriteData();
+        mJob->CardWriteData(ui->lineEdit_valueData->text(), ui->spinBox->value());
         ui->lineEdit_valueData->clear();
+        mJob->CardReadData(ui->spinBox->value());
+        if(mJob->returnStatus == true)
+        {
+            ui->label->setText("Write Data Success : " + mJob->readData);
+        }else{
+            ui->label->setText("Write Data Failed");
+        }
     }
 }

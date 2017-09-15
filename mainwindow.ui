@@ -99,6 +99,9 @@
        <property name="statusTip">
         <string>value/data</string>
        </property>
+       <property name="maxLength">
+        <number>16</number>
+       </property>
        <property name="placeholderText">
         <string>value/data</string>
        </property>
@@ -128,8 +131,14 @@
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::PlusMinus</enum>
        </property>
+       <property name="minimum">
+        <number>4</number>
+       </property>
        <property name="maximum">
         <number>15</number>
+       </property>
+       <property name="displayIntegerBase">
+        <number>10</number>
        </property>
       </widget>
      </item>
@@ -142,5 +151,22 @@
  <resources>
   <include location="res.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>lineEdit_valueData</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>128</x>
+     <y>241</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>156</x>
+     <y>241</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

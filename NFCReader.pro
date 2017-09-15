@@ -35,17 +35,11 @@ HEADERS += \
 FORMS += \
         mainwindow.ui
 
-
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../Qt/Tools/mingw530_32/i686-w64-mingw32/lib/ -lwinscar
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../Qt/Tools/mingw530_32/i686-w64-mingw32/lib/ -lwinscard
-
-INCLUDEPATH += $$PWD/../../../../../Qt/Tools/mingw530_32/i686-w64-mingw32/include
-DEPENDPATH += $$PWD/../../../../../Qt/Tools/mingw530_32/i686-w64-mingw32/include
-
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../../../../Qt/Tools/mingw530_32/i686-w64-mingw32/lib/libwinscar.a
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../../../../Qt/Tools/mingw530_32/i686-w64-mingw32/lib/libwinscard.a
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../../../../Qt/Tools/mingw530_32/i686-w64-mingw32/lib/winscar.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../../../../Qt/Tools/mingw530_32/i686-w64-mingw32/lib/winscard.lib
-
 RESOURCES += \
     res.qrc
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../Qt/Tools/mingw530_32/i686-w64-mingw32/lib/ -lwinscar
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../Qt/Tools/mingw530_32/i686-w64-mingw32/lib/ -lwinscard
+
+INCLUDEPATH += $$PWD/../../Qt/Tools/mingw530_32/i686-w64-mingw32/include
+DEPENDPATH += $$PWD/../../Qt/Tools/mingw530_32/i686-w64-mingw32/include
