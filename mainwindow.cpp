@@ -21,16 +21,12 @@ MainWindow::~MainWindow()
 void MainWindow::newNumber(QString cardUid)
 {
     cardUID = cardUid;
-    if(ui->pushButton_polling->text() != "Start Polling")
-    {
-        if(mJob->returnCardReaderStatus == true)
-        {
-            if(cardUID != NULL)ui->label->setText("Card Detection: Card Found "+cardUID);
+    if(ui->pushButton_polling->text() != "Start Polling") {
+        if(mJob->returnCardReaderStatus == true) {
+            if(!cardUID.isNull()) ui->label->setText("Card Detection: Card Found "+cardUID);
             else ui->label->setText("Card Detection: No Card Within Range");
-        }else{
-            ui->label->setText("Card Detection: No Card Reader Found");
-        }
-    }else ui->label->setText("Card Detection: Stop Polling");
+        } else ui->label->setText("Card Detection: No Card Reader Found");
+    } else ui->label->setText("Card Detection: Stop Polling");
 }
 
 void MainWindow::cardStatus(QString status)
@@ -40,7 +36,7 @@ void MainWindow::cardStatus(QString status)
 
 void MainWindow::enablebutton(int i)
 {
-    if(i <= 3)ui->pushButton_writeData->setDisabled(true);
+    if(i <= 3) ui->pushButton_writeData->setDisabled(true);
     else ui->pushButton_writeData->setEnabled(true);
 }
 
@@ -49,7 +45,7 @@ void MainWindow::scanScard()
     connect(mJob,SIGNAL(onNumber(QString)),this,SLOT(newNumber(QString)));
     connect(mJob,SIGNAL(CardStatusName(QString)),this,SLOT(cardStatus(QString)));
     connect(ui->spinBox,SIGNAL(valueChanged(int)),this,SLOT(enablebutton(int)));
-    test = QtConcurrent::run(mJob,multithread::start);
+    test = QtConcurrent::run(mJob,&multithread::start);
 
     ui->pushButton_readData->hide();
     ui->pushButton_writeData->hide();
@@ -61,17 +57,14 @@ void MainWindow::scanScard()
 
 void MainWindow::on_pushButton_polling_clicked()
 {
-    if(test.isRunning())
-    {
+    if (test.isRunning()) {
         mJob->pause();
         ui->pushButton_polling->setText("Start Polling");
         ui->pushButton_readData->show();
         ui->pushButton_writeData->show();
         ui->lineEdit_valueData->show();
         ui->spinBox->show();
-    }
-    else
-    {
+    } else {
         scanScard();
         ui->pushButton_polling->setText("Stop  Polling");
     }
