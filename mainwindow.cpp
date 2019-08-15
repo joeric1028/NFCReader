@@ -25,7 +25,7 @@ void MainWindow::newNumber(QString cardUid)
     {
         if(mJob->returnCardReaderStatus == true)
         {
-            if(cardUID != NULL)ui->label->setText("Card Detection: Card Found "+cardUID);
+            if(!cardUID.isEmpty())ui->label->setText("Card Detection: Card Found "+cardUID);
             else ui->label->setText("Card Detection: No Card Within Range");
         }else{
             ui->label->setText("Card Detection: No Card Reader Found");

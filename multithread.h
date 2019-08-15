@@ -12,22 +12,22 @@ class multithread : public QObject
 {
     Q_OBJECT
 public:
-    explicit multithread(QObject *parent = 0);
+    explicit multithread(QObject *parent = nullptr);
     ~multithread();
     void start();
     void CardListReadersLoop();
-    QString cardUID = NULL;
-    QString readData = NULL;
+    QString cardUID = nullptr;
+    QString readData = nullptr;
     bool mStop;
     bool returnStatus;
     bool returnCardReaderStatus;
 private:
-    QString         nfccard = NULL;
+    QString         nfccard = nullptr;
     SCARDCONTEXT    hSC;
     SCARDHANDLE     hCardHandle;
     SCARDCONTEXT    hContext;
-    LPTSTR          pCard = NULL;
-    LPTSTR          pReader = NULL;
+    LPTSTR          pCard = nullptr;
+    LPTSTR          pReader = nullptr;
 
 signals:
     void onNumber(QString cardName);

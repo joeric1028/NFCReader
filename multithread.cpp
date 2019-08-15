@@ -28,7 +28,7 @@ void multithread::start()
                 CardEstablishContext();
                 emit onNumber("");
             }else{
-                if(cardUID==NULL)
+                if(cardUID.isEmpty())
                 {
                     CardListReaders();
                     CardConnect(nfccard);
