@@ -53,7 +53,7 @@ void multithread::start()
 
 void multithread::CardListReadersLoop()
 {
-    LPTSTR          pmszReaders = NULL;
+    LPTSTR          pmszReaders = nullptr;
     LONG            lReturn, lReturn2;
     DWORD           cch = SCARD_AUTOALLOCATE;
 
@@ -64,7 +64,7 @@ void multithread::CardListReadersLoop()
     // Retrieve the list the readers.
     // hSC was set by a previous call to SCardEstablishContext.
     lReturn = SCardListReaders(hSC,
-                               NULL,
+                               nullptr,
                                (LPTSTR)&pmszReaders,
                                &cch );
     switch( lReturn )
@@ -142,7 +142,7 @@ void multithread::CardReadData(int blockNo)
                              SCARD_PCI_T1,
                              pbSend,
                              dwSend,
-                             NULL,
+                             nullptr,
                              pbRecv,
                              &dwRecv );
     if ( SCARD_S_SUCCESS != lReturn )
@@ -186,7 +186,7 @@ void multithread::CardWriteData(QString inputData, int blockNo)
                              SCARD_PCI_T1,
                              pbSend,
                              dwSend,
-                             NULL,
+                             nullptr,
                              pbRecv,
                              &dwRecv );
     if ( SCARD_S_SUCCESS != lReturn )
@@ -208,8 +208,8 @@ void multithread::CardEstablishContext()
         LONG            lReturn;
         // Establish the context.
         lReturn = SCardEstablishContext(SCARD_SCOPE_USER,
-                                        NULL,
-                                        NULL,
+                                        nullptr,
+                                        nullptr,
                                         &hSC);
         if ( SCARD_S_SUCCESS == lReturn )
            // qDebug("Failed SCardEstablishContext\n");
@@ -225,14 +225,14 @@ void multithread::CardEstablishContext()
 
 void multithread::CardListReaders()
 {
-    LPTSTR          pmszReaders = NULL;
+    LPTSTR          pmszReaders = nullptr;
     LONG            lReturn, lReturn2;
     DWORD           cch = SCARD_AUTOALLOCATE;
 
     // Retrieve the list the readers.
     // hSC was set by a previous call to SCardEstablishContext.
     lReturn = SCardListReaders(hSC,
-                               NULL,
+                               nullptr,
                                (LPTSTR)&pmszReaders,
                                &cch );
     switch( lReturn )
@@ -336,7 +336,7 @@ void multithread:: CardConnect(QString s)
 
 void multithread::CardListReaderGroups()
 {
-    LPTSTR          pmszReaderGroups = NULL;
+    LPTSTR          pmszReaderGroups = nullptr;
     LPTSTR          pReaderGroup;
     LONG            lReturn;
     DWORD           cch = SCARD_AUTOALLOCATE;
@@ -372,14 +372,14 @@ void multithread::CardListReaderGroups()
 
 void multithread::CardListCards()
 {
-    LPTSTR pmszCards = NULL;
+    LPTSTR pmszCards = nullptr;
 
     LONG lReturn;
     DWORD cch = SCARD_AUTOALLOCATE;
-    DWORD *null = NULL;
-    SCARDCONTEXT *scard = NULL;
+    DWORD *null = nullptr;
+    SCARDCONTEXT *scard = nullptr;
     // Retrieve the list of cards.
-    lReturn = SCardListCards(*scard, NULL, NULL, *null, (LPTSTR)&pmszCards, &cch );
+    lReturn = SCardListCards(*scard, nullptr, nullptr, *null, (LPTSTR)&pmszCards, &cch );
     if ( SCARD_S_SUCCESS != lReturn )
     {
 //        qDebug("Failed SCardListCards\n");
@@ -408,8 +408,8 @@ void multithread::CardIntroduceCardType()
     GUID  MyGuid = { 0xABCDEF00,
                      0xABCD,
                      0xABCD,
-                     0xAA, 0xBB, 0xCC, 0xDD,
-                     0xAA, 0xBB, 0xCC, 0xDD };
+                     {0xAA, 0xBB, 0xCC, 0xDD,
+                     0xAA, 0xBB, 0xCC, 0xDD} };
 
     static const BYTE MyATR[] =     { 0xaa, 0xbb, 0xcc, 0x00, 0xdd };
     static const BYTE MyATRMask[] = { 0xff, 0xff, 0xff, 0x00, 0xff};
@@ -419,7 +419,7 @@ void multithread::CardIntroduceCardType()
     lReturn = SCardIntroduceCardType(hContext,
                                      L"ACS ACR122 0",
                                      &MyGuid,
-                                     NULL,    // No interface array
+                                     nullptr,    // No interface array
                                      0,       // Interface count = 0
                                      MyATR,
                                      MyATRMask,
@@ -528,7 +528,7 @@ void multithread::CardTransmit()
                             SCARD_PCI_T1,
                             pbSend,
                             dwSend,
-                            NULL,
+                            nullptr,
                             pbRecv,
                             &dwRecv );
     if ( SCARD_S_SUCCESS != lReturn )
@@ -585,7 +585,7 @@ void multithread::CardAuthenticate(int blockNo)
                              SCARD_PCI_T1,
                              pbSend,
                              dwSend,
-                             NULL,
+                             nullptr,
                              pbRecv,
                              &dwRecv );
      if ( SCARD_S_SUCCESS != lReturn )
