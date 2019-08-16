@@ -7,6 +7,7 @@
 #include <QRunnable>
 #include <QWaitCondition>
 #include <winscard.h>
+#include <windows.h>
 
 class multithread : public QObject
 {
