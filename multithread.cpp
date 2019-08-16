@@ -151,26 +151,32 @@ void multithread::CardWriteData(QString inputData, int blockNo)
     CardAuthenticate(blockNo);
     BYTE pbRecv[258];
     BYTE  pbSend[] = {0xFF,0xD6,0x00,0x04,0x10,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+    DWORD dwSend,dwRecv;
+
     pbSend[3] = *reinterpret_cast<unsigned char*>(QByteArray::number(blockNo).data()) - 48;
-    unsigned int j = 0;
+    int j = 0;
     for(int i = 1; i <= 16; i++)
     {
         if(i > inputData.trimmed().size() || inputData.trimmed().isEmpty()) pbSend[i+4] = 0x00;
-        else pbSend[i+4] = inputData.trimmed().at(j).toLatin1();
+        else {
+            QByteArray data;
+            data.push_back(inputData.trimmed().at(j).toLatin1());
+            pbSend[i+4] = *reinterpret_cast<unsigned char*>(data.data());
+        }
         j++;
     }
-    DWORD dwSend,dwRecv;
+
+
     dwSend = sizeof(pbSend);
     dwRecv = sizeof(pbRecv);
-    LONG lReturn;
-    lReturn = SCardTransmit(hCardHandle,
+    LONG lReturn = SCardTransmit(hCardHandle,
                              SCARD_PCI_T1,
                              pbSend,
                              dwSend,
                              nullptr,
                              pbRecv,
                              &dwRecv);
-    if(SCARD_S_SUCCESS != lReturn )
+    if(SCARD_S_SUCCESS != lReturn)
     {
         qDebug()<<"Failed SCardTransmit\n " <<pbSend[5];
         returnStatus = false;
@@ -179,7 +185,7 @@ void multithread::CardWriteData(QString inputData, int blockNo)
         returnStatus = true;
         QByteArray qdb = reinterpret_cast<const char*>(pbRecv);
         readData = qdb;
-        qDebug()<<"Success " <<readData <<" "<<pbSend[5];
+        qDebug()<< "Success " << readData << " " << pbSend[5];
     }
 }
 
@@ -251,46 +257,40 @@ void multithread::CardListReaders()
 void multithread:: CardConnect(QString s)
 {
 
-    LONG            lReturn;
-    DWORD           dwAP;
+    LONG  lReturn;
+    DWORD dwAP;
 
-    lReturn = SCardConnect( hSC,
-                            (LPCTSTR)s.unicode(),
+    lReturn = SCardConnect(hSC,
+                            reinterpret_cast<LPCTSTR>(s.unicode()),
                             SCARD_SHARE_SHARED,
                             SCARD_PROTOCOL_T0 | SCARD_PROTOCOL_T1,
                             &hCardHandle,
                             &dwAP);
 
-    if ( SCARD_S_SUCCESS != lReturn )
+    if(SCARD_S_SUCCESS != lReturn)
     {
-       // qDebug("Failed SCardConnect\n");
         qDebug()<<"Failed SCardConnect\n";
         returnStatus = false;
-
-       // exit(1);  // Or other appropriate action.
-    }else{
+    } else {
         returnStatus = true;
         // Use the connection.
         // Display the active protocol.
-        switch ( dwAP )
+        switch (dwAP)
         {
             case SCARD_PROTOCOL_T0:
-                //qDebug("Active protocol T0\n");
-            qDebug()<<"Active protocol T0\n";
+                qDebug()<<"Active protocol T0\n";
                 break;
 
             case SCARD_PROTOCOL_T1:
-              //  qDebug("Active protocol T1\n");
-            qDebug()<<"Active protocol T1\n";
+                qDebug()<<"Active protocol T1\n";
                 break;
 
             case SCARD_PROTOCOL_UNDEFINED:
-
+                qDebug()<<"Active protocol is undefined\n";
+                break;
             default:
-               // qDebug("Active protocol unnegotiated or unknown\n");
             qDebug()<<"Active protocol unnegotiated or unknown\n";
                 break;
-
         }
     }
 }
