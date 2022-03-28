@@ -7,6 +7,7 @@
 #include <QRunnable>
 #include <QWaitCondition>
 #include <winscard.h>
+#include <windows.h>
 
 class multithread : public QObject
 {
@@ -14,7 +15,7 @@ class multithread : public QObject
 public:
     explicit multithread(QObject *parent = nullptr);
     ~multithread();
-    void start();
+    int start();
     void CardListReadersLoop();
     QString cardUID = nullptr;
     QString readData = nullptr;

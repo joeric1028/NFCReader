@@ -25,12 +25,10 @@ void MainWindow::newNumber(QString cardUid)
     {
         if(mJob->returnCardReaderStatus == true)
         {
-            if(!cardUID.isEmpty())ui->label->setText("Card Detection: Card Found "+cardUID);
+            if(!cardUID.isEmpty()) ui->label->setText("Card Detection: Card Found "+cardUID);
             else ui->label->setText("Card Detection: No Card Within Range");
-        }else{
-            ui->label->setText("Card Detection: No Card Reader Found");
-        }
-    }else ui->label->setText("Card Detection: Stop Polling");
+        } else ui->label->setText("Card Detection: No Card Reader Found");
+    } else ui->label->setText("Card Detection: Stop Polling");
 }
 
 void MainWindow::cardStatus(QString status)
@@ -40,22 +38,22 @@ void MainWindow::cardStatus(QString status)
 
 void MainWindow::enablebutton(int i)
 {
-    if(i <= 3)ui->pushButton_writeData->setDisabled(true);
+    if(i <= 3) ui->pushButton_writeData->setDisabled(true);
     else ui->pushButton_writeData->setEnabled(true);
 }
 
 void MainWindow::scanScard()
 {
-    connect(mJob,SIGNAL(onNumber(QString)),this,SLOT(newNumber(QString)));
-    connect(mJob,SIGNAL(CardStatusName(QString)),this,SLOT(cardStatus(QString)));
-    connect(ui->spinBox,SIGNAL(valueChanged(int)),this,SLOT(enablebutton(int)));
-    test = QtConcurrent::run(mJob,multithread::start);
+    connect(mJob, SIGNAL(onNumber(QString)), this, SLOT(newNumber(QString)));
+    connect(mJob, SIGNAL(CardStatusName(QString)), this, SLOT(cardStatus(QString)));
+    connect(ui->spinBox, SIGNAL(valueChanged(int)), this, SLOT(enablebutton(int)));
+    test = QtConcurrent::run(&multithread::start,mJob);
 
     ui->pushButton_readData->hide();
     ui->pushButton_writeData->hide();
     ui->lineEdit_valueData->hide();
     ui->spinBox->hide();
-    if(ui->spinBox->text().toFloat() <= 3)ui->pushButton_writeData->setDisabled(true);
+    if(ui->spinBox->text().toFloat() <= 3) ui->pushButton_writeData->setDisabled(true);
     else ui->pushButton_writeData->setEnabled(true);
 }
 
@@ -69,11 +67,9 @@ void MainWindow::on_pushButton_polling_clicked()
         ui->pushButton_writeData->show();
         ui->lineEdit_valueData->show();
         ui->spinBox->show();
-    }
-    else
-    {
+    } else {
         scanScard();
-        ui->pushButton_polling->setText("Stop  Polling");
+        ui->pushButton_polling->setText("Stop Polling");
     }
 }
 
@@ -85,17 +81,12 @@ void MainWindow::on_pushButton_readData_clicked()
         mJob->CardReadData(ui->spinBox->value());
         data = mJob->readData;
         ui->lineEdit_valueData->setText(data);
+
         if(mJob->returnStatus == true)
         {
-            if(!data.isEmpty())
-            {
-                ui->label->setText("Read Data Success : " + data);
-            }else{
-                ui->label->setText("Read Data Success : No Data on Block " + ui->spinBox->text() + '.');
-            }
-        }else{
-            ui->label->setText("Read Data Failed");
-        }
+            if(!data.isEmpty()) ui->label->setText("Read Data Success : " + data);
+            else ui->label->setText("Read Data Success : No Data on Block " + ui->spinBox->text() + '.');
+        } else ui->label->setText("Read Data Failed");
     }
 }
 
@@ -104,15 +95,11 @@ void MainWindow::on_pushButton_writeData_clicked()
 {
     if(ui->pushButton_polling->text() == "Start Polling")
     {
-
         mJob->CardWriteData(ui->lineEdit_valueData->text(), ui->spinBox->value());
         ui->lineEdit_valueData->clear();
         mJob->CardReadData(ui->spinBox->value());
-        if(mJob->returnStatus == true)
-        {
-            ui->label->setText("Write Data Success : " + mJob->readData);
-        }else{
-            ui->label->setText("Write Data Failed");
-        }
+
+        if(mJob->returnStatus == true) ui->label->setText("Write Data Success : " + mJob->readData);
+        else ui->label->setText("Write Data Failed");
     }
 }
