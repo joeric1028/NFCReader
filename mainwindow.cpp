@@ -47,7 +47,7 @@ void MainWindow::scanScard()
     connect(mJob, SIGNAL(onNumber(QString)), this, SLOT(newNumber(QString)));
     connect(mJob, SIGNAL(CardStatusName(QString)), this, SLOT(cardStatus(QString)));
     connect(ui->spinBox, SIGNAL(valueChanged(int)), this, SLOT(enablebutton(int)));
-    test = QtConcurrent::run(mJob, &multithread::start);
+    test = QtConcurrent::run(&multithread::start,mJob);
 
     ui->pushButton_readData->hide();
     ui->pushButton_writeData->hide();

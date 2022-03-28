@@ -11,7 +11,7 @@ multithread::~multithread()
     CardFreeMemory();
 }
 
-void multithread::start()
+int multithread::start()
 {
     cardUID = "";
     mStop = false;
@@ -40,6 +40,7 @@ void multithread::start()
         }
         Sleep(900);
     }
+    return 0;
 }
 
 void multithread::CardListReadersLoop()
